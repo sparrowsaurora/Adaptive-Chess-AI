@@ -1,11 +1,37 @@
-import chess
+import chess, random
 
 class ChessGame:
 
-    def main(self):
+    def __init__(self):
         board = chess.Board()
-        print(board)
 
+        name = input("Enter your name: ")
+        while colour != "white" and colour != "black":
+            colour = input("Enter your colour (white or black) or press enter to play a random colour: ")
+            if colour.lower() == "white" or colour.lower() == "w":
+                colour = "white"
+            elif colour.lower() == "black" or colour.lower() == "b":
+                colour = "black"
+            elif colour == "":
+                colour = random.choice(["white", "black"])
+            else:
+                print("Invalid colour. Please enter 'white' or 'black'.")
+
+        elo = input("if you have an elo please enter it here: (if not press enter)")
+        if elo == "":
+            elo = 300
+
+        return board, name, colour, elo
+
+    def main(self):
+        '''
+            where the game starts
+            loops through the game until the game is over
+            makes move in uci format
+            then calls the bot to make move
+        '''
+        board, name, colour, elo = self.__init__()
+        print(board)
         while not board.is_game_over():
             print("Legal moves:")
             self.legal_moves(board)
