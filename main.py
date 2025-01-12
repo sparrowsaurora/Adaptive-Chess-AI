@@ -38,6 +38,47 @@ class ChessGame:
             print(str(move), end=", ")
         print("")
 
+    def change_elo(self, board, elo):
+        '''
+            changes elo depending on the outcome of the game
+
+            elo += piecevalue_diff * 2 / (1 + 10 ** (rating_diff / 400))
+        '''
+        pass
+
+    def piecevalue_diff(self, board):
+        '''
+            Calculates the worth of the position in terms of material value
+
+            King = 0
+            Queen = 9
+            Rook = 5
+            Bishop = 3
+            Knight = 3
+            Pawn = 1
+        '''
+        pass
+
+    def bot_move(self, board, bot_move):
+        pass
+
+class Bot:
+    '''
+        this is where the neural network will be implemented
+
+        elo += 105% of player_value
+        colour = player_opposite if ! picked else: random.choice(white, black)
+    '''
+    def __init__(self, colour, elo, name):
+        pass
+
+    def move(self, board):
+        pass
+
+    
+
+
+
 if __name__ == "__main__":
     game = ChessGame()
     game.main()
