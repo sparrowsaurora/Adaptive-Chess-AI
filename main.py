@@ -3,24 +3,33 @@ import chess, random
 class ChessGame:
 
     def __init__(self):
+        # make board
         self.board = chess.Board()
 
-        self.colour = ""
+        # Username
         self.name = input("Enter your name: ")
+
+        # Colour
+        self.colour = ""
         while self.colour != "white" and self.colour != "black":
             self.colour = input("Enter your colour (white or black) or press enter to play a random colour: ")
             if self.colour.lower() == "white" or self.colour.lower() == "w":
                 self.colour = "white"
+                bot_colour = "black"
             elif self.colour.lower() == "black" or self.colour.lower() == "b":
                 self.colour = "black"
+                bot_colour = "white"
             elif self.colour == "":
                 self.colour = random.choice(["white", "black"])
             else:
                 print("Invalid colour. Please enter 'white' or 'black'. ")
 
+        # Elo
         self.elo = input("if you have an elo please enter it here: (if not press enter)")
         if self.elo == "":
             self.elo = 300
+
+        self.Bot = Bot(bot_colour, int(self.elo))
 
         return None
 
@@ -69,7 +78,7 @@ class ChessGame:
         '''
             changes elo depending on the outcome of the game
 
-            elo += piecevalue_diff * 2 / (1 + 10 ** (rating_diff / 400))
+            elo += piecevalue_diff * 1 / (1 + 10 ** (rating_diff / 400))
         '''
         pass
 
@@ -96,10 +105,14 @@ class Bot:
         elo += 105% of player_value
         colour = player_opposite if ! picked else: random.choice(white, black)
     '''
-    def __init__(self, colour, elo, name):
-        pass
+    def __init__(self, bot_colour, elo):
+        self.colour = bot_colour
+        self.bot_elo = round(float(elo) * 1.05)
+        self.name = random.choice(["bot_1", "bot_2", "bot_3"])
+        print(self.colour, self.bot_elo, self.name)
+        return None
 
-    def move(self, board):
+    def move(self):
         pass
 
     
