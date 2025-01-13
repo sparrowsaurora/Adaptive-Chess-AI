@@ -3,25 +3,26 @@ import chess, random
 class ChessGame:
 
     def __init__(self):
-        board = chess.Board()
+        self.board = chess.Board()
 
-        name = input("Enter your name: ")
-        while colour != "white" and colour != "black":
-            colour = input("Enter your colour (white or black) or press enter to play a random colour: ")
-            if colour.lower() == "white" or colour.lower() == "w":
-                colour = "white"
-            elif colour.lower() == "black" or colour.lower() == "b":
-                colour = "black"
-            elif colour == "":
-                colour = random.choice(["white", "black"])
+        self.colour = ""
+        self.name = input("Enter your name: ")
+        while self.colour != "white" and self.colour != "black":
+            self.colour = input("Enter your colour (white or black) or press enter to play a random colour: ")
+            if self.colour.lower() == "white" or self.colour.lower() == "w":
+                self.colour = "white"
+            elif self.colour.lower() == "black" or self.colour.lower() == "b":
+                self.colour = "black"
+            elif self.colour == "":
+                self.colour = random.choice(["white", "black"])
             else:
-                print("Invalid colour. Please enter 'white' or 'black'.")
+                print("Invalid colour. Please enter 'white' or 'black'. ")
 
-        elo = input("if you have an elo please enter it here: (if not press enter)")
-        if elo == "":
-            elo = 300
+        self.elo = input("if you have an elo please enter it here: (if not press enter)")
+        if self.elo == "":
+            self.elo = 300
 
-        return board, name, colour, elo
+        return None
 
     def main(self):
         '''
@@ -30,33 +31,33 @@ class ChessGame:
             makes move in uci format
             then calls the bot to make move
         '''
-        board, name, colour, elo = self.__init__()
-        print(board)
-        while not board.is_game_over():
+        print(self.board)
+        while not self.board.is_game_over():
             print("Legal moves:")
-            self.legal_moves(board)
+            self.legal_moves()
             move = input("Your move: ")
-            if chess.Move.from_uci(move) in board.legal_moves:
+            if chess.Move.from_uci(move) in self.board.legal_moves:
                 try:
-                    board.push(chess.Move.from_uci(move))  # Add the move to the board.
+                    self.board.push(chess.Move.from_uci(move))  # Add the move to the board.
                 except:
-                    board.pop()
+                    self.board.pop()
                     print(f"{move} is not valid")
-                print(board)
+                print(self.board)
             else:
                 print("Invalid move, try again!")
 
-            if board.is_game_over():
+            if self.board.is_game_over():
+                print(chess.Board.outcome().winner())
                 break
     
-    def legal_moves(self, board):
+    def legal_moves(self):
         '''
             prints each legal move for every turn
 
             prints the move in the UCI format: 'e2e4'
         '''
         move_list = []
-        for legal_move in board.legal_moves:
+        for legal_move in self.board.legal_moves:
             legal_move = str(legal_move)
             move_list.append(legal_move)  # Print each legal move
 
