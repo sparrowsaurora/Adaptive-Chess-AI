@@ -7,27 +7,30 @@ class ChessGame:
         self.board = chess.Board()
 
         # Username
-        self.name = input("Enter your name: ")
-
+        # self.name = input("Enter your name: ")
+        self.name = "temp"
         # Colour
-        self.colour = ""
-        while self.colour != "white" and self.colour != "black":
-            self.colour = input("Enter your colour (white or black) or press enter to play a random colour: ")
-            if self.colour.lower() == "white" or self.colour.lower() == "w":
-                self.colour = "white"
-                bot_colour = "black"
-            elif self.colour.lower() == "black" or self.colour.lower() == "b":
-                self.colour = "black"
-                bot_colour = "white"
-            elif self.colour == "":
-                self.colour = random.choice(["white", "black"])
-            else:
-                print("Invalid colour. Please enter 'white' or 'black'. ")
-
+        # self.colour = ""
+        # while self.colour != "white" and self.colour != "black":
+        #     self.colour = input("Enter your colour (white or black) or press enter to play a random colour: ")
+        #     if self.colour.lower() == "white" or self.colour.lower() == "w":
+        #         self.colour = "white"
+        #         bot_colour = "black"
+        #     elif self.colour.lower() == "black" or self.colour.lower() == "b":
+        #         self.colour = "black"
+        #         bot_colour = "white"
+        #     elif self.colour == "":
+        #         self.colour = random.choice(["white", "black"])
+        #     else:
+        #         print("Invalid colour. Please enter 'white' or 'black'. ")
+        self.colour = "white"
+        bot_colour = "black"
         # Elo
-        self.elo = input("if you have an elo please enter it here: (if not press enter)")
-        if self.elo == "":
-            self.elo = 300
+        # self.elo = input("if you have an elo please enter it here: (if not press enter)")
+        # if self.elo == "":
+        #     self.elo = 300
+        
+        self.elo = 300
 
         self.Bot = Bot(bot_colour, int(self.elo))
 
@@ -43,36 +46,43 @@ class ChessGame:
         print(self.board)
         while not self.board.is_game_over():
             print("Legal moves:")
-            self.legal_moves()
+            move_list = self.list_legal_moves()
+            for move in move_list:
+                print(str(move), end=", ")
+            print("\n")
             move = input("Your move: ")
             if chess.Move.from_uci(move) in self.board.legal_moves:
                 try:
-                    self.board.push(chess.Move.from_uci(move))  # Add the move to the board.
+                    self.board.push(chess.Move.from_uci(move)) # Add the move to the board.
                 except:
                     self.board.pop()
                     print(f"{move} is not valid")
-                print(self.board)
             else:
                 print("Invalid move, try again!")
+            bot_move_list = self.list_legal_moves()
+            bot_move = self.Bot.move(bot_move_list)
+            self.board.push(chess.Move.from_uci(bot_move))
+
+            print(f"Bot played: {bot_move}")
+
+            print(self.board)
 
             if self.board.is_game_over():
                 print(chess.Board.outcome().winner())
                 break
     
-    def legal_moves(self):
+    def list_legal_moves(self):
         '''
             prints each legal move for every turn
 
-            prints the move in the UCI format: 'e2e4'
+            prints the moves in the UCI format: 'e2e4'
         '''
         move_list = []
         for legal_move in self.board.legal_moves:
             legal_move = str(legal_move)
             move_list.append(legal_move)  # Print each legal move
 
-        for move in move_list:
-            print(str(move), end=", ")
-        print("")
+        return move_list
 
     def change_elo(self, board, elo):
         '''
@@ -112,8 +122,13 @@ class Bot:
         print(self.colour, self.bot_elo, self.name)
         return None
 
-    def move(self):
-        pass
+    def move(self, move_list):
+        '''
+            this is a temporary function
+            Bot makes a random move from the list of legal moves.
+            The chess library ensures the move is valid for the bot's color.
+        '''
+        return random.choice(move_list)
 
     
 
