@@ -45,11 +45,13 @@ class ChessGame:
         '''
         print(self.board)
         while not self.board.is_game_over():
+
+            # Prints list of legal moves
             print("Legal moves:")
             move_list = self.list_legal_moves()
-            for move in move_list:
-                print(str(move), end=", ")
-            print("\n")
+            print(", ".join(move_list))
+
+            # prompts for user's move + error handling
             move = input("Your move: ")
             if chess.Move.from_uci(move) in self.board.legal_moves:
                 try:
@@ -59,17 +61,26 @@ class ChessGame:
                     print(f"{move} is not valid")
             else:
                 print("Invalid move, try again!")
-            bot_move_list = self.list_legal_moves()
-            bot_move = self.Bot.move(bot_move_list)
+                continue
+
+            # bot's move
+            bot_move = self.Bot.move(self.board)
             self.board.push(chess.Move.from_uci(bot_move))
-
             print(f"Bot played: {bot_move}")
-
+            
+            #  prints updated board
             print(self.board)
 
+            #checks for win condition
             if self.board.is_game_over():
-                print(chess.Board.outcome().winner())
-                break
+                print("Game Over!")
+                outcome = self.board.outcome()
+                if outcome.winner is None:
+                    print("It's a draw!")
+                elif outcome.winner:
+                    print("White wins!" if self.colour == "white" else "Black wins!")
+                else:
+                    print("Black wins!" if self.colour == "black" else "White wins!")
     
     def list_legal_moves(self):
         '''
@@ -84,33 +95,9 @@ class ChessGame:
 
         return move_list
 
-    def change_elo(self, board, elo):
-        '''
-            changes elo depending on the outcome of the game
-
-            elo += piecevalue_diff * 1 / (1 + 10 ** (rating_diff / 400))
-        '''
-        pass
-
-    def piecevalue_diff(self, board):
-        '''
-            Calculates the worth of the position in terms of material value
-
-            King = 0
-            Queen = 9
-            Rook = 5
-            Bishop = 3
-            Knight = 3
-            Pawn = 1
-        '''
-        pass
-
-    def bot_move(self, board, bot_move):
-        pass
-
 class Bot:
     '''
-        this is where the neural network will be implemented
+        This is where the neural network will be implemented.
 
         elo += 105% of player_value
         colour = player_opposite if ! picked else: random.choice(white, black)
@@ -122,16 +109,82 @@ class Bot:
         print(self.colour, self.bot_elo, self.name)
         return None
 
-    def move(self, move_list):
+    def evaluate_board(self, board):
         '''
-            this is a temporary function
-            Bot makes a random move from the list of legal moves.
-            The chess library ensures the move is valid for the bot's color.
+            Evaluates the board and gives it a score based on the pieces on the board.
+            + for white's favour, - for black's favour.
         '''
-        return random.choice(move_list)
+        piece_values = {
+            chess.PAWN: 1,
+            chess.KNIGHT: 3,
+            chess.BISHOP: 3,
+            chess.ROOK: 5,
+            chess.QUEEN: 9,
+            chess.KING: 0  # because the game ends if captured
+        }
+        score = 0
+        for position in chess.SQUARES:
+            piece = board.piece_at(position)
+            if piece:
+                value = piece_values[piece.piece_type]
+                if piece.color:
+                    score += value
+                else:
+                    score -= value
+        return score
 
-    
+    def minimax_alpha_beta(self, board, depth, alpha, beta, is_maximizing):
+        '''
+            This is the smart part of the bot. It looks ahead to see the best moves.
+            Alpha = the best value the maximizing player can get.
+            Beta = the best value the minimizing player can get.
+        '''
+        if depth == 0 or board.is_game_over():
+            return self.evaluate_board(board)
 
+        if is_maximizing:
+            max_eval = float("-inf")
+            for move in board.legal_moves:
+                board.push(move)
+                eval = self.minimax_alpha_beta(board, depth - 1, alpha, beta, False)
+                board.pop()
+                max_eval = max(max_eval, eval)
+                alpha = max(alpha, eval)
+                if beta <= alpha:  # Cut off the search if it's no longer useful
+                    break
+            return max_eval
+        else:
+            min_eval = float("inf")
+            for move in board.legal_moves:
+                board.push(move)
+                eval = self.minimax_alpha_beta(board, depth - 1, alpha, beta, True)
+                board.pop()
+                min_eval = min(min_eval, eval)
+                beta = min(beta, eval)
+                if beta <= alpha:  # Cut off the search if it's no longer useful
+                    break
+            return min_eval
+
+    def move(self, board):
+        '''
+            The Bot calculates the best move using the minimax algorithm with alpha-beta pruning.
+        '''
+        best_move = None
+        best_value = float("-inf") if self.colour == "white" else float("inf")
+
+        for move in board.legal_moves:
+            board.push(move)
+
+            # Evaluate move using minimax
+            move_value = self.minimax_alpha_beta(board, depth=2, alpha=float("-inf"), beta=float("inf"), is_maximizing=(self.colour == "black"))
+            board.pop()
+
+            # Find best move
+            if (self.colour == "white" and move_value > best_value) or (self.colour == "black" and move_value < best_value):
+                best_value = move_value
+                best_move = move
+
+        return best_move.uci()
 
 
 if __name__ == "__main__":
