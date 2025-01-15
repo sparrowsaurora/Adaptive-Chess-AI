@@ -3,7 +3,7 @@
 An adaptive chess bot written in Python that analyses the player's skill level and adjusts its gameplay to match or slightly surpass it.
 currently we are using an minimax algorithm with Alpha Beta Pruning to make the best possible move.
 
-## Features (some To Do)
+## Features
 
 - Dynamic Difficulty Adjustment: The bot assesses the player's skill level during gameplay and adapts accordingly.
 
@@ -80,6 +80,13 @@ currently we are using an minimax algorithm with Alpha Beta Pruning to make the 
 ## Contributing
 
 Contributions are welcome! Feel free to open an issue or submit a pull request. For major changes, please open a discussion first to propose your ideas.
+
+## To Do
+
+- improve algorithm
+- add calculation, adjustion and saving method for elo
+- add gui
+- adapt algorithm strength depending on elo
 
 ## License
 
