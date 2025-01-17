@@ -30,7 +30,7 @@ class ChessGame:
         # if self.elo == "":
         #     self.elo = 300
         
-        self.elo = 300
+        self.elo = 3000
 
         self.Bot = Bot(bot_colour, int(self.elo))
 
@@ -175,8 +175,23 @@ class Bot:
         for move in board.legal_moves:
             board.push(move)
 
-            # Evaluate move using minimax
-            move_value = self.minimax_alpha_beta(board, depth=2, alpha=float("-inf"), beta=float("inf"), is_maximizing=(self.colour == "black"))
+             # Calculate alpha-beta pruning depth based on player ELO
+            elo_depth_map = {
+                0: 1,  # Beginner
+                1000: 2,  # Casual
+                1500: 3,  # Intermediate
+                2000: 4,  # Advanced
+                2500: 5,  # Expert
+                3000: 6  # Master
+            }
+            depth = 2  # Default depth
+            for elo, depth_eqiv in elo_depth_map.items():
+                if self.bot_elo <= elo:
+                    depth = depth_eqiv
+                    break
+
+                # Evaluate move using minimax
+            move_value = self.minimax_alpha_beta(board, depth=depth, alpha=float("-inf"), beta=float("inf"), is_maximizing=(self.colour == "black"))
             board.pop()
 
             # Find best move
