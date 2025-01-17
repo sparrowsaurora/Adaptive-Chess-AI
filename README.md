@@ -1,7 +1,8 @@
 # Adaptive Chess Bot
 
 An adaptive chess bot written in Python that analyses the player's skill level and adjusts its gameplay to match or slightly surpass it.
-currently we are using an minimax algorithm with Alpha Beta Pruning to make the best possible move.
+currently we are using an minimax algorithm with Alpha Beta Pruning to make the best possible move.  
+_Currently any elo above 1800 will take more than 10 seconds to generate a response move_
 
 ## Features
 
