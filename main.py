@@ -139,31 +139,33 @@ class Bot:
             Alpha = the best value the maximizing player can get.
             Beta = the best value the minimizing player can get.
         '''
-        if depth == 0 or board.is_game_over():
-            return self.evaluate_board(board)
+        # Base case: If the game is over or the maximum depth is reached, return the evaluation score.
+        if depth == 0 or board.is_game_over():  
+            return self.evaluate_board(board)  # Evaluate the current state of the game.
 
         if is_maximizing:
-            max_eval = float("-inf")
+            max_eval = float("-inf")  # Initialize the best evaluation score for the maximizing player.
             for move in board.legal_moves:
-                board.push(move)
-                eval = self.minimax_alpha_beta(board, depth - 1, alpha, beta, False)
-                board.pop()
-                max_eval = max(max_eval, eval)
-                alpha = max(alpha, eval)
-                if beta <= alpha:  # Cut off the search if it's no longer useful
+                board.push(move)  # Make the move on the board.
+                eval = self.minimax_alpha_beta(board, depth - 1, alpha, beta, False)  # Recursively call for the minimizing player.
+                board.pop()  # Undo the move on the board.
+                max_eval = max(max_eval, eval)  # Update the best evaluation score.
+                alpha = max(alpha, eval)  # Update alpha.
+                if beta <= alpha:  # Prune the search tree if beta is less than or equal to alpha.
                     break
-            return max_eval
+            return max_eval  # Return the best evaluation score found.
+
         else:
-            min_eval = float("inf")
+            min_eval = float("inf")  # Initialize the best evaluation score for the minimizing player.
             for move in board.legal_moves:
-                board.push(move)
-                eval = self.minimax_alpha_beta(board, depth - 1, alpha, beta, True)
-                board.pop()
-                min_eval = min(min_eval, eval)
-                beta = min(beta, eval)
-                if beta <= alpha:  # Cut off the search if it's no longer useful
+                board.push(move)  # Make the move on the board.
+                eval = self.minimax_alpha_beta(board, depth - 1, alpha, beta, True)  # Recursively call for the maximizing player.
+                board.pop()  # Undo the move on the board.
+                min_eval = min(min_eval, eval)  # Update the best evaluation score.
+                beta = min(beta, eval)  # Update beta.
+                if beta <= alpha:  # Prune the search tree if beta is less than or equal to alpha.
                     break
-            return min_eval
+            return min_eval  # Return the best evaluation score found.
 
     def move(self, board):
         '''
@@ -195,7 +197,13 @@ class Bot:
                 print(f"Warning: ELO {self.bot_elo} is higher than the maximum value in the ELO depth map")
 
             # Evaluate move using minimax
-            move_value = self.minimax_alpha_beta(board, depth=depth, alpha=float("-inf"), beta=float("inf"), is_maximizing=(self.colour == "black"))
+            move_value = self.minimax_alpha_beta(
+                board, 
+                depth=depth, 
+                alpha=float("-inf"), 
+                beta=float("inf"), 
+                is_maximizing=(self.colour == "black")
+            )
             print(f"Move value: {move_value}")
             board.pop()
 
